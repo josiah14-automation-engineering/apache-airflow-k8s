@@ -1,0 +1,46 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  apiServerAddress: "0.0.0.0"
+  apiServerPort: 500
+nodes:
+- role: control-plane
+- role: control-plane
+- role: worker
+  extraPortMappings:
+  - containerPort: 30809
+    hostPort: 510
+    listenAddress: "0.0.0.0"
+- role: worker
+  extraPortMappings:
+  - containerPort: 30809
+    hostPort: 511
+    listenAddress: "0.0.0.0"
+- role: worker
+  extraPortMappings:
+  - containerPort: 30809
+    hostPort: 512
+    listenAddress: "0.0.0.0"
+- role: worker
+  extraPortMappings:
+  - containerPort: 30809
+    hostPort: 513
+    listenAddress: "0.0.0.0"
+- role: worker
+  extraPortMappings:
+  - containerPort: 30809
+    hostPort: 514
+    listenAddress: "0.0.0.0"
+containerdConfigPatches:
+  # forward to port 5000 on the "local-registry" container from localhost on port 5000
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5000"]
+      endpoint = ["http://registry-container-ipaddr:5000"]
+kubeadmConfigPatchesJSON6902:
+  - group: kubeadm.k8s.io
+    version: v1beta2
+    kind: ClusterConfiguration
+    patch: |
+      - op: add
+        path: /apiServer/certSANs/-
+        value: docker
